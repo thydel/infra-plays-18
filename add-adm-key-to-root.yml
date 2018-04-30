@@ -1,0 +1,33 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: Add adm keys to root
+  hosts: 'all:!poweroff'
+  gather_facts: False
+
+  vars_files:
+    - vars/ext/user_groups.json
+    - vars/ext/user_accounts.yml
+
+  tasks:
+
+    - vars:
+        group: admin
+        Groups: '{{ epi_groups }}'
+        users: '{{ user_accounts_trigram }}'
+      set_fact:
+        group_keys: |
+          {% set l = [] %}
+          {% for user in Groups[group].users %}
+          {%   do l.append(users[user].ssh_keys) %}
+          {% endfor %}
+          {{ l | flatten | unique }}
+      run_once: True
+      delegate_to: localhost
+      name: Build keys list
+
+    - authorized_key: { user: root, key: '{{ ssh_key }}' }
+      become: True
+      with_items: '{{ group_keys }}'
+      loop_control: { loop_var: ssh_key, label: '{{ ssh_key.split(" ")[2] }}' }
+      name: Add keys
