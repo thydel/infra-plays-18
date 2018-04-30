@@ -20,7 +20,7 @@ infra-data.yml
 We no can add public plays using private data (or migrate old plays
 needlessly in private repos to public repos)
 
-# Add add the keys of all admins to root account
+# Add the keys of all admins to root account
 
 ```
 add-adm-key-to-root.yml
