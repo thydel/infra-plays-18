@@ -1,0 +1,118 @@
+---
+
+- src: brisho.sSMTP
+  name: sSMTP
+  version: master
+
+- src: paluh.augeas
+  name: augeas
+  version: master
+
+- src: https://github.com/thydel/rsync-pair.git
+
+- src: https://github.com/thydel/ar-pysphere-misc.git
+  name: pysphere
+  version: master
+
+- src: https://github.com/thydel/ar-vsphere-clone.git
+  name: clone
+  version: master
+
+- src: https://github.com/thydel/ar-if-rename-first.git
+  name: if-rename-first
+  version: master
+
+- src: https://github.com/thydel/ar-common-tools.git
+  name: common-tools
+  version: master
+
+- src: https://github.com/thydel/ansible-hg-modules.git
+  name: amr-hg-commit
+  version: master
+
+- src: https://github.com/thydel/ar-hg-etc-com.git
+  scm: git
+  name: hg-etc-com
+  version: use-module
+
+- src: git@thyepi.github.com:Epiconcept-Paris/infra-legacy-ar-named.git
+  scm: git
+  version: master
+  accept_hostkey: True
+  key_file: ~/.ssh/id_epiconcept
+  name: legacy-named
+
+- src: https://github.com/thydel/ar-vsphere-if-add.git
+  name: vsphere-if-add
+  version: master
+
+- src: https://github.com/thydel/ar-vsphere-disk-add.git
+  name: vsphere-disk-add
+  version: master
+
+- src: https://github.com/thydel/ar-ntpdate.git
+  name: ntp-date
+  version: master
+
+- src: https://github.com/thydel/ar-make.git
+  name: make
+  version: master
+
+- src: https://github.com/thydel/ar-user-account.git
+  name: user-account
+  version: master
+
+- src: https://github.com/thydel/ar-reset-known_hosts-entry.git
+  name: reset-known_hosts
+  version: master
+
+- src: https://github.com/thydel/ar-remote-reset-known_hosts-entry.git
+  name: remote-reset-known_hosts
+  version: master
+
+- src: https://github.com/thydel/ar-automysqlbackup.git
+  name: automysqlbackup
+  version: master
+
+- src: https://github.com/thydel/ar-revaliases-ssmtp.git
+  name: revaliases-ssmtp
+  version: master
+  
+- src: https://github.com/thydel/ar-bsd-mailx.git
+  name: bsd-mailx
+  version: master
+  
+- src: https://github.com/thydel/ar-nfs-pair.git
+  name: nfs-pair
+  version: master
+
+- src: https://github.com/thydel/ar-regenerate-host-keys.git
+  name: regenerate-host-keys
+  version: master
+
+- src: https://github.com/thydel/ar-fill-know_hosts.git
+  name: fill-know_hosts
+  version: master
+
+- src: https://github.com/thydel/ar-jsonnet.git
+  name: jsonnet
+  version: master
+
+- src: geerlingguy.munin-node
+  version: master
+
+- src: willshersystems.sshd
+  name: sshd
+  version: master
+
+- src: https://github.com/thydel/ar-rename-user.git
+  name: rename-user
+  version: master
+
+- src: https://github.com/thydel/ar-sudoersd.git
+  name: sudoersd
+  version: master
+
+- src: https://github.com/thydel/ar-patch.git
+  name: lpatch
+  version: master

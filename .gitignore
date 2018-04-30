@@ -10,3 +10,6 @@ ansible.cfg
 ssh-config
 vault-pass.py
 inventory/local
+
+inventory/*.ext
+inventory/group_vars/*/*-ext.yml

@@ -1,0 +1,129 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- hosts: localhost
+  gather_facts: False
+  tags: once
+
+  vars: &vars
+
+    default_version: v0.97.2
+
+    data_dir:        ext/data
+    data_version:    '{{ version | default(default_version) }}'
+    data:            '{{ data_dir}}/{{ data_version }}/templates.out'
+    legacy:          '{{ data_dir}}/{{ data_version }}/vars/legacy'
+    direct:          '{{ data_dir}}/{{ data_version }}/vars/direct'
+    local:           '{{ ansible_hostname }}'
+    user:            '{{ ansible_user_id }}'
+
+  tasks:
+
+    - set_fact:
+        keys:
+          - id_epiconcept
+          - t.delamare@epiconcept.fr
+    - set_fact:
+        git_ssh_key_file: |-
+          {{ lookup('env', 'GIT_SSH_KEY_FILE') | default('~/.ssh/' ~ keys[1], True) }}
+
+    - git:
+        repo: git@github.com:Epiconcept-Paris/infra-data.git
+        version: '{{ data_version }}'
+        dest: '{{ data_dir}}/{{ data_version }}'
+        key_file: '{{ git_ssh_key_file }}'
+      when: data_version != 'debug'
+      tags: git
+      name: get infra-data
+
+- hosts: localhost
+  gather_facts: True
+  tags: main
+
+  vars: *vars
+
+  tasks:
+
+    - copy:
+        src: '{{ data}}/config/ssh-config-{{ local }}-{{ user }}'
+        dest: '{{ playbook_dir}}/ssh-config'
+        mode: 0444
+      name: config
+
+    - copy:
+        src: '{{ data}}/inventory/{{ item }}'
+        dest: '{{ playbook_dir}}/inventory/{{ item }}.ext'
+        mode: 0444
+      with_items:
+        - ansible_ssh_host
+        - networks
+        - static_groups
+        - poweroff
+        - ansible_become_pass_{{ user }}
+
+    - copy:
+        src: '{{ data}}/inventory/{{ item }}'
+        dest: '{{ playbook_dir}}/inventory/'
+        mode: 0444
+      with_items:
+        - group_vars
+
+      name: inventory
+
+    - file:
+        path: '{{ playbook_dir}}/vars/ext'
+        state: directory
+
+    - copy:
+        src: '{{ data}}/vars/{{ item }}.yml'
+        dest: '{{ playbook_dir}}/vars/ext/{{ item }}.yml'
+        mode: 0444
+      with_flattened:
+        - ips
+        - [ networks, admin_networks ]
+        - vms
+        - user_accounts
+        - munin_groups4vms
+        - [ vmname2fqdn4bastions, bastions4vms ]
+      name: vars
+
+    - copy:
+        src: '{{ data}}/vars/{{ item }}.json'
+        dest: '{{ playbook_dir}}/vars/ext/{{ item }}.json'
+        mode: 0444
+      with_flattened:
+        - user_groups
+        - clones
+        - vmname2uuid
+      name: json vars
+
+    - include_role: { name: make }
+      vars:
+        makefile: infra-data.mk
+        targets: [ user_passwords ]
+        params: { data: '{{ data }}' }
+      name: vault vars
+
+    - file:
+        path: '{{ playbook_dir}}/vars/ext/{{ item }}'
+        state: directory
+      with_items: [ legacy, direct ]
+
+    - copy:
+        src: '{{ legacy }}/{{ item }}.yml'
+        dest: '{{ playbook_dir}}/vars/ext/legacy/{{ item }}.yml'
+        mode: 0444
+      with_items:
+        - oxa_networks
+        - oxa_vcenter
+        - oxa_vm_default
+      name: legacy
+
+    - copy:
+        src: '{{ direct }}/{{ item }}.yml'
+        dest: '{{ playbook_dir}}/vars/ext/direct/{{ item }}.yml'
+        mode: 0444
+      with_items:
+        - voozanoo
+        - voopanel
+      name: direct
